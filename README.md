@@ -3,6 +3,8 @@
 This project is a minimal Quarkus application.
 It wants to demo how to set up preview environments using ArgoCD.
 
+:warning: this is a dummy updates :warning:
+
 ## How to build the docker image
 
 https://quarkus.io/guides/container-image#docker
