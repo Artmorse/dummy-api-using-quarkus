@@ -106,6 +106,8 @@ kubectl exec -it $(kubectl get pod -o custom-columns=:metadata.name | grep argoc
 kubectl exec -it $(kubectl get pod -o custom-columns=:metadata.name | grep argocd-server) -- argocd admin notifications template get
 ```
 
+[//]: # (Improve the templates to add the application URLs.)
+
 ### Secret configuration
 
 I've disabled the automated creation of the `argocd-notifications-secret` Secret resource.

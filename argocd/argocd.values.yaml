@@ -63,14 +63,14 @@ notifications:
           path: /test
           body: |
             {
-              "body": "[app-created triggered] {{.app.metadata.name}}"
+              "body": "[on-created triggered] {{.app.metadata.name}}"
             }
         github-comment-on-pr:
           method: POST
           path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
           body: |
             {
-              "body": "[app-created triggered] {{.app.metadata.name}}",
+              "body": "Application `{{.app.metadata.name}}` has been created.",
             }
     template.app-deleted: |
       message: Application {{.app.metadata.name}} has been deleted.
@@ -80,14 +80,14 @@ notifications:
           path: /test
           body: |
             {
-              "body": "[app-deleted triggered] {{.app.metadata.name}}"
+              "body": "[on-deleted triggered] {{.app.metadata.name}}"
             }
         github-comment-on-pr:
           method: POST
           path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
           body: |
             {
-              "body": "[app-deleted triggered] {{.app.metadata.name}}"
+              "body": "Application `{{.app.metadata.name}}` has been deleted."
             }
     template.app-deployed: |
       message: |
@@ -98,14 +98,14 @@ notifications:
           path: /test
           body: |
             {
-              "body": "[app-deployed triggered] {{.app.metadata.name}}"
+              "body": "[on-deployed triggered] {{.app.metadata.name}}"
             }
         github-comment-on-pr:
           method: POST
           path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
           body: |
             {
-              "body": "[app-deployed triggered] {{.app.metadata.name}}"
+              "body": "New version of an application `{{.app.metadata.name}}` is up and running."
             }
     template.app-health-degraded: |
       message: |
@@ -117,14 +117,14 @@ notifications:
           path: /test
           body: |
             {
-              "body": "[app-health-degraded triggered] {{.app.metadata.name}}"
+              "body": "[on-health-degraded triggered] {{.app.metadata.name}}"
             }
         github-comment-on-pr:
           method: POST
           path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
           body: |
             {
-              "body": "[app-health-degraded triggered] {{.app.metadata.name}}"
+              "body": "Application `{{.app.metadata.name}}` has degraded.\nApplication details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}."
             }
     template.app-sync-failed: |
       message: |
@@ -136,14 +136,14 @@ notifications:
           path: /test
           body: |
             {
-              "body": "[app-sync-failed triggered] {{.app.metadata.name}}"
+              "body": "[on-sync-failed triggered] {{.app.metadata.name}}"
             }
         github-comment-on-pr:
           method: POST
           path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
           body: |
             {
-              "body": "[app-sync-failed triggered] {{.app.metadata.name}}"
+              "body": "The sync operation of application `{{.app.metadata.name}}` has failed at {{.app.status.operationState.finishedAt}} with the following error: {{.app.status.operationState.message}}\nSync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true ."
             }
     template.app-sync-running: |
       message: |
@@ -155,14 +155,14 @@ notifications:
           path: /test
           body: |
             {
-              "body": "[app-sync-running triggered] {{.app.metadata.name}}"
+              "body": "[on-sync-running triggered] {{.app.metadata.name}}"
             }
         github-comment-on-pr:
           method: POST
           path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
           body: |
             {
-              "body": "[app-sync-running triggered] {{.app.metadata.name}}"
+              "body": "The sync operation of application `{{.app.metadata.name}}` has started at {{.app.status.operationState.startedAt}}.\nSync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true ."
             }
     template.app-sync-status-unknown: |
       message: |
@@ -174,14 +174,14 @@ notifications:
           path: /test
           body: |
             {
-              "body": "[app-sync-status-unknown triggered] {{.app.metadata.name}}"
+              "body": "[on-sync-status-unknown triggered] {{.app.metadata.name}}"
             }
         github-comment-on-pr:
           method: POST
           path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
           body: |
             {
-              "body": "[app-sync-status-unknown triggered] {{.app.metadata.name}}"
+              "body": "Application `{{.app.metadata.name}}` sync is 'Unknown'.\nApplication details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}."
             }
     template.app-sync-succeeded: |
       message: |
@@ -193,14 +193,14 @@ notifications:
           path: /test
           body: |
             {
-              "body": "[app-sync-succeeded triggered] {{.app.metadata.name}}"
+              "body": "[on-sync-succeeded triggered] {{.app.metadata.name}}"
             }
         github-comment-on-pr:
           method: POST
           path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
           body: |
             {
-              "body": "[app-sync-succeeded triggered] {{.app.metadata.name}}"
+              "body": "Application `{{.app.metadata.name}}` has been successfully synced at {{.app.status.operationState.finishedAt}}.\nSync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true ."
             }
   # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/triggers/
   triggers:
