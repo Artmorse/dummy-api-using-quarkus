@@ -1,12 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: quarkus-preview-env-demo
+  name: quarkus-prs
+  namespace: argocd
 spec:
   generators:
     - pullRequest:
         github:
-          owner: Artmorse
+          owner: LeMorseTestCompany
           repo: quarkus-preview-env-demo
 #          tokenRef:
 #            key: token
@@ -15,6 +16,11 @@ spec:
   template:
     metadata:
       name: 'quarkus-demo-app-{{branch}}-{{number}}'
+      labels:
+        custom.argoproj.io/number: '{{number}}'
+        custom.argoproj.io/branch: '{{branch}}'
+        custom.argoproj.io/head_sha: '{{head_sha}}'
+        custom.argoproj.io/notifiers.github-comment-on-pr: "true"
     spec:
       destination:
         namespace: 'preview-{{branch}}'
@@ -22,7 +28,7 @@ spec:
       project: default
       source:
         path: preview/
-        repoURL: 'https://github.com/Artmorse/quarkus-preview-env-demo.git'
+        repoURL: 'https://github.com/LeMorseTestCompany/quarkus-preview-env-demo.git'
         targetRevision: HEAD
         helm:
           parameters:

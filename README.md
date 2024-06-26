@@ -54,4 +54,4 @@ You need to create 2 secrets in your repository:
 
 ## Setup ArgoCD application
 
-Follow [this documentation](argocd/) to set up ArgoCD application.
+Follow [this documentation](argocd/) to set up ArgoCD application and manage both per PR preview environment with Github notfications and staging environment (main branch).
