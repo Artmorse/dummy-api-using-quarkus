@@ -14,8 +14,8 @@
 https://github.com/argoproj/argo-cd/releases/tag/v2.10.3
 
 ```bash
-kind create cluster
-kubectx kind-kind
+kind create cluster --name preview-env-cluster
+kubectx kind-preview-env-cluster
 
 kubectl create namespace argocd
 kubens argocd
@@ -38,18 +38,16 @@ https://argo-cd.readthedocs.io/en/latest/operator-manual/installation/
 https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
 
 ```bash
-kind create cluster --name argocd-helm
-kubectx kind-argocd-helm
-
-kubectl create namespace argocd
-kubens argocd
+kind create cluster --name preview-env-cluster
+kubectx kind-preview-env-cluster
 
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update argo
 helm search repo argo-cd
 
 helm install argocd argo/argo-cd \
-  --values argocd/argocd.values.yaml
+  --values argocd/argocd.values.yaml \
+  --namespace=argocd --create-namespace
 ```
 
 The default ArgoCD admin username is `admin` and you can find the password using:
@@ -68,10 +66,16 @@ Our demo application have Helm manifests defined in [preview/templates](/preview
 
 The github repository is public, so we don't need to manage any secrets.
 
-We can configure the ArgoCD ApplicationSet to create a preview environment for each branch.
+We can configure the _ApplicationSet_ to create a preview environment for each branch
 
 ```bash
 kubectl apply -n argocd -f argocd/applicationset.yml
+```
+
+and an _Application_ to create a preview environment for the main branch.
+
+```bash
+kubectl apply -n argocd -f argocd/application.yml
 ```
 
 ## ArgoCD notifications

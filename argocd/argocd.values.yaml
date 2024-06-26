@@ -245,11 +245,3 @@ notifications:
         send:
         - app-sync-succeeded
         when: app.status.operationState.phase in ['Succeeded']
-
-
-
-#I was waiting for the application to be up and running then I wanted to run this command:
-#```
-#  kubectl exec -it $(kubectl get pod -o custom-columns=:metadata.name | grep argocd-server) -- argocd admin notifications template notify test quarkus-demo-app-hello-gray-9
-#```
-#I was also working with the selectors.
