@@ -100,8 +100,6 @@ helm install my-quarkus-app ./preview \
 helm list
 ```
 
-// TODO: should we use the --namespace to install the Helm chart? YES
-
 ## CI
 
 I've configured Continuous Integration using Github Actions to automatically build docker images then push them to Docker Hub for this POC.
