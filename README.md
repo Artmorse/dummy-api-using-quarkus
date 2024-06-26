@@ -93,9 +93,9 @@ You can test it locally using:
 helm install my-quarkus-app ./preview \
  --set name=quarkus-preview-env-app \
  --set username=lemorse \
- --set image=acaron/quarkus-preview-env-demo \
+ --set image=lemorse/quarkus-preview-env-demo \
  --set version=1.0.0-SNAPSHOT \
- --set namespace=my-quarkus-app
+ --namespace=my-quarkus-app --create-namespace
  
 helm list
 ```

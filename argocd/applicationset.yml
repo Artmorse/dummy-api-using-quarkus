@@ -32,8 +32,6 @@ spec:
         targetRevision: HEAD
         helm:
           parameters:
-            - name: namespace
-              value: 'preview-{{branch}}'
             - name: version
               value: '{{head_sha}}'
             - name: username

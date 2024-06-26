@@ -15,8 +15,6 @@ spec:
     targetRevision: HEAD
     helm:
       parameters:
-        - name: namespace
-          value: 'preview-main'
         - name: version
           value: 'main'
         - name: username
