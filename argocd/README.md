@@ -116,8 +116,6 @@ kubectl create secret generic argocd-notifications-secret --from-literal=github-
 
 ### Services
 
-// TODO: is it preferable to use `annotations` instead of `labels`? is it possible to have selectors using `annotations`?
-
 #### Github PR notifications
 
 I've configured a service called `github-comment-on-pr` which allow to send notifications to the Github PRs.
@@ -145,7 +143,7 @@ labels:
 
 ### Test and troubleshoot
 
-// TODO: add argocd troubleshooting section link
+https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/troubleshooting/
 
 #### Send templates
 
