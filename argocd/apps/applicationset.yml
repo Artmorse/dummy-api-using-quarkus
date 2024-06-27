@@ -25,7 +25,7 @@ spec:
         custom.argoproj.io/notifiers.github-comment-on-pr: "true"
     spec:
       destination:
-        namespace: 'preview-{{branch}}'
+        namespace: 'quarkus-preview-env-demo-{{number}}'
         server: 'https://kubernetes.default.svc'
       project: default
       source:
@@ -45,3 +45,5 @@ spec:
       syncPolicy:
         automated:
           selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
