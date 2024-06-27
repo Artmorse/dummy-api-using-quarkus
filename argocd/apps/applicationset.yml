@@ -10,7 +10,7 @@ spec:
           owner: LeMorseTestCompany
           repo: quarkus-preview-env-demo
           labels:
-            - preview
+            - previews
 #          tokenRef:
 #            key: token
 #            secretName: github-token
