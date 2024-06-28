@@ -22,7 +22,11 @@ spec:
         custom.argoproj.io/number: '{{number}}'
         custom.argoproj.io/branch: '{{branch}}'
         custom.argoproj.io/head_sha: '{{head_sha}}'
-        custom.argoproj.io/notifiers.github-comment-on-pr: "true"
+#        custom.argoproj.io/notifiers.github-comment-on-pr: "true"
+      annotations:
+        notifications.argoproj.io/subscribe.on-sync-failed.github-comment-on-pr: ""
+        notifications.argoproj.io/subscribe.on-sync-status-unknown.github-comment-on-pr: ""
+        notifications.argoproj.io/subscribe.on-sync-succeeded.github-comment-on-pr: ""
     spec:
       destination:
         namespace: 'quarkus-preview-env-demo-{{number}}'

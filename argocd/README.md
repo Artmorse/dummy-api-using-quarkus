@@ -106,7 +106,10 @@ I've used the _triggers_ and _templates_ from the catalog manifest (https://raw.
 
 Check they're available using:
 ```bash
+# see all the triggers configured in the ArgoCD instance
 kubectl exec -it $(kubectl get pod -o custom-columns=:metadata.name | grep argocd-server) -- argocd admin notifications trigger get
+
+# see all the templates configured in the ArgoCD instance
 kubectl exec -it $(kubectl get pod -o custom-columns=:metadata.name | grep argocd-server) -- argocd admin notifications template get
 ```
 
@@ -124,12 +127,29 @@ kubectl create secret generic argocd-notifications-secret --from-literal=github-
 
 #### Github PR notifications
 
+##### Using default subscriptions
+
+:warning: I switched from [default subscriptions](https://argo-cd.readthedocs.io/en/stable/user-guide/subscriptions/#default-subscriptions) to [specific subscription](https://argo-cd.readthedocs.io/en/stable/user-guide/subscriptions/#default-subscriptions). The next section deprecated. :warning:
+
 I've configured a service called `github-comment-on-pr` which allow to send notifications to the Github PRs.
 To enable it, you need to add the labels below in your _ApplicationSet_ application template specification:
 ```yaml
 labels:
     custom.argoproj.io/number: '{{number}}'
     custom.argoproj.io/notifiers.github-comment-on-pr: "true"
+```
+
+##### Specific subscriptions
+
+You can subscribe to ArgoCD events (the triggers is specified in the [argocd values file](argocd/argocd.values.yaml): `.notifications.triggers`) adding annotations to the _Application_ specification (in both _Application_ or _ApplicationSet_).
+
+The example below will make the application subscribe the service `github-comment-on-pr` to the `on-sync-failed`, `on-sync-status-unknown` and `on-sync-succeeded` triggers.
+
+```yaml
+annotations:
+    notifications.argoproj.io/subscribe.on-sync-failed.github-comment-on-pr: ""
+    notifications.argoproj.io/subscribe.on-sync-status-unknown.github-comment-on-pr: ""
+    notifications.argoproj.io/subscribe.on-sync-succeeded.github-comment-on-pr: ""
 ```
 
 Documentation to the Github create an issue comment documentation: https://docs.github.com/en/rest/issues/comments?apiVersion=2022-11-28#create-an-issue-comment
@@ -162,17 +182,18 @@ kubectl exec -it $(kubectl get pod -o custom-columns=:metadata.name | grep argoc
 
 I've also created a test template that I used to debug the templates.
 You can run it using:
+
 ```bash
 kubectl exec -it $(kubectl get pod -o custom-columns=:metadata.name | grep argocd-server) -- argocd admin notifications template notify test YOUR_APPLICATION
 ```
 
 #### Redeploy the application manifests
 
-To trigger the different events, you can reinstall the application manifests using:
+To trigger the different events, you can also reinstall the application manifests using:
 
 ```bash
-kubectl delete -f argocd/application.yml
-kubectl apply -f argocd/application.yml
-kubectl delete -f argocd/applicationset.yml
-kubectl apply -f argocd/applicationset.yml
+kubectl delete -f argocd/apps/application.yml
+kubectl apply -f argocd/apps/application.yml
+kubectl delete -f argocd/apps/applicationset.yml
+kubectl apply -f argocd/apps/applicationset.yml
 ```

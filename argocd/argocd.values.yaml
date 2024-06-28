@@ -20,31 +20,31 @@ notifications:
       - name: Authorization
         value: Bearer $github-token
   # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/subscriptions/
-  subscriptions:
-    - recipients:
-        - dummy-wh
-      selector: custom.argoproj.io/notifiers.dummy-wh=true
-      triggers:
-        - on-created
-        - on-deleted
-        - on-deployed
-        - on-health-degraded
-        - on-sync-failed
-        - on-sync-running
-        - on-sync-status-unknown
-        - on-sync-succeeded
-    - recipients:
-        - github-comment-on-pr
-      selector: custom.argoproj.io/notifiers.github-comment-on-pr=true
-      triggers:
-        - on-created
-        - on-deleted
-        - on-deployed
-        - on-health-degraded
-        - on-sync-failed
-        - on-sync-running
-        - on-sync-status-unknown
-        - on-sync-succeeded
+#  subscriptions:
+#    - recipients:
+#        - dummy-wh
+#      selector: custom.argoproj.io/notifiers.dummy-wh=true
+#      triggers:
+#        - on-created
+#        - on-deleted
+#        - on-deployed
+#        - on-health-degraded
+#        - on-sync-failed
+#        - on-sync-running
+#        - on-sync-status-unknown
+#        - on-sync-succeeded
+#    - recipients:
+#        - github-comment-on-pr
+#      selector: custom.argoproj.io/notifiers.github-comment-on-pr=true
+#      triggers:
+#        - on-created
+#        - on-deleted
+#        - on-deployed
+#        - on-health-degraded
+#        - on-sync-failed
+#        - on-sync-running
+#        - on-sync-status-unknown
+#        - on-sync-succeeded
   # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/templates/
   templates:
     template.test: |
