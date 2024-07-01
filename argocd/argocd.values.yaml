@@ -1,0 +1,247 @@
+configs:
+  params:
+    server.insecure: true
+
+## Notifications controller
+notifications:
+  # -- Enable notifications controller
+  enabled: true
+  secret:
+    ### If true, will create a secret with the name below. Otherwise, will assume existence of a secret with that name.
+    create: false
+    name: "argocd-notifications-secret"
+  # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/services/overview/
+  notifiers:
+    service.webhook.dummy-wh: |
+      url: https://argocdtest.requestcatcher.com
+    service.webhook.github-comment-on-pr: |
+      url: https://api.github.com
+      headers:
+      - name: Authorization
+        value: Bearer $github-token
+  # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/subscriptions/
+#  subscriptions:
+#    - recipients:
+#        - dummy-wh
+#      selector: custom.argoproj.io/notifiers.dummy-wh=true
+#      triggers:
+#        - on-created
+#        - on-deleted
+#        - on-deployed
+#        - on-health-degraded
+#        - on-sync-failed
+#        - on-sync-running
+#        - on-sync-status-unknown
+#        - on-sync-succeeded
+#    - recipients:
+#        - github-comment-on-pr
+#      selector: custom.argoproj.io/notifiers.github-comment-on-pr=true
+#      triggers:
+#        - on-created
+#        - on-deleted
+#        - on-deployed
+#        - on-health-degraded
+#        - on-sync-failed
+#        - on-sync-running
+#        - on-sync-status-unknown
+#        - on-sync-succeeded
+  # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/templates/
+  templates:
+    template.test: |
+      message: |
+        "repoURL": "{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}"
+        "number": "{{index .app.metadata.labels "custom.argoproj.io/number"}}"
+        "branch": "{{index .app.metadata.labels "custom.argoproj.io/branch"}}"
+        "head_sha": "{{index .app.metadata.labels "custom.argoproj.io/head_sha"}}"
+        "revision": "{{.app.status.operationState.operation.sync.revision}}"
+        "compiledPath": /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
+    template.app-created: |
+      message: Application {{.app.metadata.name}} has been created.
+      webhook:
+        dummy-wh:
+          method: POST
+          path: /test
+          body: |
+            {
+              "body": "[on-created triggered] {{.app.metadata.name}}"
+            }
+        github-comment-on-pr:
+          method: POST
+          path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
+          body: |
+            {
+              "body": "Application `{{.app.metadata.name}}` has been created.",
+            }
+    template.app-deleted: |
+      message: Application {{.app.metadata.name}} has been deleted.
+      webhook:
+        dummy-wh:
+          method: POST
+          path: /test
+          body: |
+            {
+              "body": "[on-deleted triggered] {{.app.metadata.name}}"
+            }
+        github-comment-on-pr:
+          method: POST
+          path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
+          body: |
+            {
+              "body": "Application `{{.app.metadata.name}}` has been deleted."
+            }
+    template.app-deployed: |
+      message: |
+        Application {{.app.metadata.name}} is now running new version of deployments manifests.
+      webhook:
+        dummy-wh:
+          method: POST
+          path: /test
+          body: |
+            {
+              "body": "[on-deployed triggered] {{.app.metadata.name}}"
+            }
+        github-comment-on-pr:
+          method: POST
+          path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
+          body: |
+            {
+              "body": "New version of an application `{{.app.metadata.name}}` is up and running."
+            }
+    template.app-health-degraded: |
+      message: |
+        Application {{.app.metadata.name}} has degraded.
+        Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+      webhook:
+        dummy-wh:
+          method: POST
+          path: /test
+          body: |
+            {
+              "body": "[on-health-degraded triggered] {{.app.metadata.name}}"
+            }
+        github-comment-on-pr:
+          method: POST
+          path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
+          body: |
+            {
+              "body": "Application `{{.app.metadata.name}}` has degraded.\nApplication details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}."
+            }
+    template.app-sync-failed: |
+      message: |
+        The sync operation of application {{.app.metadata.name}} has failed at {{.app.status.operationState.finishedAt}} with the following error: {{.app.status.operationState.message}}
+        Sync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true .
+      webhook:
+        dummy-wh:
+          method: POST
+          path: /test
+          body: |
+            {
+              "body": "[on-sync-failed triggered] {{.app.metadata.name}}"
+            }
+        github-comment-on-pr:
+          method: POST
+          path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
+          body: |
+            {
+              "body": "The sync operation of application `{{.app.metadata.name}}` has failed at {{.app.status.operationState.finishedAt}} with the following error: {{.app.status.operationState.message}}\nSync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true ."
+            }
+    template.app-sync-running: |
+      message: |
+        The sync operation of application {{.app.metadata.name}} has started at {{.app.status.operationState.startedAt}}.
+        Sync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true .
+      webhook:
+        dummy-wh:
+          method: POST
+          path: /test
+          body: |
+            {
+              "body": "[on-sync-running triggered] {{.app.metadata.name}}"
+            }
+        github-comment-on-pr:
+          method: POST
+          path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
+          body: |
+            {
+              "body": "The sync operation of application `{{.app.metadata.name}}` has started at {{.app.status.operationState.startedAt}}.\nSync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true ."
+            }
+    template.app-sync-status-unknown: |
+      message: |
+        Application {{.app.metadata.name}} sync is 'Unknown'.
+        Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+      webhook:
+        dummy-wh:
+          method: POST
+          path: /test
+          body: |
+            {
+              "body": "[on-sync-status-unknown triggered] {{.app.metadata.name}}"
+            }
+        github-comment-on-pr:
+          method: POST
+          path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
+          body: |
+            {
+              "body": "Application `{{.app.metadata.name}}` sync is 'Unknown'.\nApplication details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}."
+            }
+    template.app-sync-succeeded: |
+      message: |
+        Application {{.app.metadata.name}} has been successfully synced at {{.app.status.operationState.finishedAt}}.
+        Sync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true .
+      webhook:
+        dummy-wh:
+          method: POST
+          path: /test
+          body: |
+            {
+              "body": "[on-sync-succeeded triggered] {{.app.metadata.name}}"
+            }
+        github-comment-on-pr:
+          method: POST
+          path: /repos/{{call .repo.FullNameByRepoURL .app.spec.source.repoURL}}/issues/{{index .app.metadata.labels "custom.argoproj.io/number"}}/comments
+          body: |
+            {
+              "body": "Application `{{.app.metadata.name}}` has been successfully synced at {{.app.status.operationState.finishedAt}}.\nSync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true ."
+            }
+  # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/triggers/
+  triggers:
+    trigger.on-created: |
+      - description: Application is created.
+        when: "true"
+        send:
+        - app-created
+    trigger.on-deleted: |
+      - description: Application is deleted.
+        when: app.metadata.deletionTimestamp != nil
+        send:
+        - app-deleted
+    trigger.on-deployed: |
+      - description: Application is synced and healthy. Triggered once per commit.
+        oncePer: app.status.sync.revision
+        send:
+        - app-deployed
+        when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+    trigger.on-health-degraded: |
+      - description: Application has degraded
+        send:
+        - app-health-degraded
+        when: app.status.health.status == 'Degraded'
+    trigger.on-sync-failed: |
+      - description: Application syncing has failed
+        send:
+        - app-sync-failed
+        when: app.status.operationState.phase in ['Error', 'Failed']
+    trigger.on-sync-running: |
+      - description: Application is being synced
+        send:
+        - app-sync-running
+        when: app.status.operationState.phase in ['Running']
+    trigger.on-sync-status-unknown: |
+      - description: Application status is 'Unknown'
+        send:
+        - app-sync-status-unknown
+        when: app.status.sync.status == 'Unknown'
+    trigger.on-sync-succeeded: |
+      - description: Application syncing has succeeded
+        send:
+        - app-sync-succeeded
+        when: app.status.operationState.phase in ['Succeeded']

@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: quarkus-main
+  namespace: argocd
+#  labels:
+#    custom.argoproj.io/notifiers.dummy-wh: "true"
+spec:
+  destination:
+    namespace: 'quarkus-preview-env-demo-0'
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: preview/
+    repoURL: 'https://github.com/LeMorseTestCompany/quarkus-preview-env-demo.git'
+    targetRevision: HEAD
+    helm:
+      parameters:
+        - name: version
+          value: 'main'
+        - name: username
+          value: lemorse
+        - name: image
+          value: quarkus-preview-env-demo
+        - name: name
+          value: quarkus-demo-app
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,13 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: quarkus-preview-env-demo
+  name: quarkus-prs
+  namespace: argocd
 spec:
   generators:
     - pullRequest:
         github:
-          owner: Artmorse
+          owner: LeMorseTestCompany
           repo: quarkus-preview-env-demo
+          labels:
+            - previews
 #          tokenRef:
 #            key: token
 #            secretName: github-token
@@ -15,19 +18,26 @@ spec:
   template:
     metadata:
       name: 'quarkus-demo-app-{{branch}}-{{number}}'
+      labels:
+        custom.argoproj.io/number: '{{number}}'
+        custom.argoproj.io/branch: '{{branch}}'
+        custom.argoproj.io/head_sha: '{{head_sha}}'
+#        custom.argoproj.io/notifiers.github-comment-on-pr: "true"
+      annotations:
+        notifications.argoproj.io/subscribe.on-sync-failed.github-comment-on-pr: ""
+        notifications.argoproj.io/subscribe.on-sync-status-unknown.github-comment-on-pr: ""
+        notifications.argoproj.io/subscribe.on-sync-succeeded.github-comment-on-pr: ""
     spec:
       destination:
-        namespace: 'preview-{{branch}}'
+        namespace: 'quarkus-preview-env-demo-{{number}}'
         server: 'https://kubernetes.default.svc'
       project: default
       source:
         path: preview/
-        repoURL: 'https://github.com/Artmorse/quarkus-preview-env-demo.git'
+        repoURL: 'https://github.com/LeMorseTestCompany/quarkus-preview-env-demo.git'
         targetRevision: HEAD
         helm:
           parameters:
-            - name: namespace
-              value: 'preview-{{branch}}'
             - name: version
               value: '{{head_sha}}'
             - name: username
@@ -39,3 +49,5 @@ spec:
       syncPolicy:
         automated:
           selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
