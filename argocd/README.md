@@ -66,17 +66,26 @@ Our demo application have Helm manifests defined in [preview/templates](/preview
 
 The github repository is public, so we don't need to manage any secrets.
 
-We can configure the _ApplicationSet_ to create a preview environment for each branch
+### Per-PR preview environments
+
+We can configure the _ApplicationSet_ to create a preview environment for each branch:
 
 ```bash
 kubectl apply -n argocd -f argocd/applicationset.yml
 ```
 
-and an _Application_ to create a preview environment for the main branch.
+The sequence diagram below explains the workflow of the _ApplicationSet_:
+
+![argocd-sequence-diagram.drawio.png](./assets/argocd-sequence-diagram.drawio.png)
+
+### Static preview environment
+
+We can configure the _Application_ to create a preview environment for the main branch:
 
 ```bash
 kubectl apply -n argocd -f argocd/application.yml
 ```
+
 
 ## ArgoCD notifications
 
