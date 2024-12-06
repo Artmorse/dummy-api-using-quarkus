@@ -71,7 +71,7 @@ The github repository is public, so we don't need to manage any secrets.
 We can configure the _ApplicationSet_ to create a preview environment for each branch:
 
 ```bash
-kubectl apply -n argocd -f argocd/applicationset.yml
+kubectl apply -n argocd -f argocd/apps/applicationset.yml
 ```
 
 The sequence diagram below explains the workflow of the _ApplicationSet_:
